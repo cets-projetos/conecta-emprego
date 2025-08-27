@@ -1,12 +1,24 @@
 from flask import render_template, redirect, session, jsonify, request, make_response, send_file
 from app.routes import users_bp 
 import uuid 
-from app.models import User
+from app.models import User, Estudante, Recrutador
 from app import app, db
 
 @users_bp.route("/")
 def homepage():
-    return "Hello World"
+    try:
+        user = session.get('user_id')
+        if 'user_id' in session:    
+            if Estudante.query.filter_by(id=user).first():
+                return render_template("pagina-inicial-estudante.html")
+            elif Recrutador.query.filter_by(id=user).first():
+                return render_template("pagina-inicial-recrutador.html")
+            else:
+                return render_template("cadastro-tipo-usuario.html")
+    except Exception as e:
+        print("Erro ao carregar a página inicial:", e)  
+
+
 
 @users_bp.route("/api/cadastrar-usuario", method=["POST"])
 def cadastrar_usuario():
@@ -44,5 +56,6 @@ def login():
 @users_bp.route("/api/logout")
 def logout():
     session.pop('user_id', None)
-    return redirect("/pagina-inicial")                                                  
+    return redirect("/pagina-inicial")                                      
+
 
