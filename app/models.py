@@ -54,3 +54,5 @@ class Certificado(db.Model):
         self.provedor = provedor 
         self.link = link
     
+with app.app_context():
+    db.create_all()  # Cria as tabelas definidas nos modelos
